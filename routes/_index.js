@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+/* GET home page. */
+router.get('/', function (req, res, next) {
+  res.render('index', {title: 'Express e'});
+});
 
 // 导入MySQL模块
 var mysql = require('mysql');
@@ -27,8 +31,15 @@ router.get('/sUser', function (req, res, next) {
   pool.getConnection(function (err, connection) {
 // 获取前台页面传过来的参数
     var param = req.query || req.params;
+
+    let pageNum = param.page;
+    let pageSize = param.size;
+
+    // connection.query(userSQL.totalRecord)
+
 // 建立连接 增加一个用户信息
-    connection.query(userSQL.queryAll, function (err, result) {
+    connection.query(userSQL.queryAll, [parseInt(pageNum), parseInt(pageSize)], function (err, result) {
+
 
       // 以json形式，把操作结果返回给前台页面
       responseJSON(res, result);
@@ -65,12 +76,6 @@ router.get('/addUser', function (req, res, next) {
 
     });
   });
-});
-
-
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
 });
 
 module.exports = router;
